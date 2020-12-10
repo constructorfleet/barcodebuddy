@@ -31,15 +31,15 @@ class BarcodeLookup {
     /**
      * Look up a barcode using providers
      * @param string $barcode Input barcode
-     * @return string Returns product name or "N/A" if not found
+     * @return null|Product Returns product model if found
      */
-    public static function lookUp($barcode) {
+    public static function lookUp(string $barcode): ?Product {
         foreach (BarcodeLookup::$providers as &$provider) {
             $result = (new $provider())->lookupBarcode($barcode);
             if ($result != null)
                 return $result;
         }
 
-        return "N/A";
+        return null;
     }
 }

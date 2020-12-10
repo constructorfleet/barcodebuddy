@@ -19,6 +19,7 @@ require_once __DIR__ . "/ProviderOpenFoodFacts.php";
 require_once __DIR__ . "/ProviderUpcDb.php";
 require_once __DIR__ . "/ProviderJumbo.php";
 require_once __DIR__ . "/ProviderUpcDatabase.php";
+require_once __DIR__ . "/../models/Product.php";
 
 class LookupProvider {
 
@@ -33,7 +34,27 @@ class LookupProvider {
         $this->apiKey         = $apiKey;
     }
 
-    protected function isProviderEnabled() {
+    /**
+     * @param string $barcode
+     * @return Product|null
+     * @throws Exception
+     */
+    function lookupBarcode(string $barcode): ?Product {
+        if (!$this->isProviderEnabled())
+            return null;
+
+        try {
+            $json = $this->lookup($barcode);
+            if ($json == null)
+                return null;
+            return $this->extractProductModel($json);
+        } catch (Exception $ex) {
+            API::logError($ex->getMessage());
+            return null;
+        }
+    }
+
+    protected function isProviderEnabled(): bool {
         if ($this->providerConfigKey == null)
             throw new Exception('providerConfigKey needs to be overridden!');
         return BBConfig::getInstance()[$this->providerConfigKey];
@@ -42,13 +63,23 @@ class LookupProvider {
     /**
      * Looks up a barcode
      * @param string $barcode The barcode to lookup
-     * @return null|string         Name of product, null if none found
+     * @return null|array     The resulting json array
      * @throws Exception
      */
-    public function lookupBarcode($barcode) {
+    protected function lookup(string $barcode): ?array {
         throw new Exception('lookupBarcode needs to be overridden!');
     }
 
+    /**
+     * Extracts a product model to facilitate integration with Grocy
+     *
+     * @param array $json The lookup request's json response
+     * @return null|Product
+     * @throws Exception
+     */
+    protected function extractProductModel(array $json) : ?Product {
+        throw new Exception('extractProductModel needs to be overridden!');
+    }
 
     protected function execute($url) {
         $curl = new CurlGenerator($url, METHOD_GET, null, null, true, $this->ignoredResultCodes);
