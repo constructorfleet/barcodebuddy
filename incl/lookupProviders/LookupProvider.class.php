@@ -47,7 +47,7 @@ class LookupProvider {
      * @throws Exception
      */
     public function lookupBarcode($barcode) {
-        throw new Exception('lookupBarcode needs to be overriden!');
+        throw new Exception('lookupBarcode needs to be overridden!');
     }
 
 
