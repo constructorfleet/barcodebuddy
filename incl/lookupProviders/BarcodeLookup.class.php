@@ -21,20 +21,23 @@ require_once __DIR__ . "/../config.inc.php";
 
 class BarcodeLookup {
 
+    private static $providers = array(
+        "ProviderOpenFoodFacts",
+        "ProviderUpcDb",
+        "ProviderUpcDatabase"
+    );
+
     /**
      * Look up a barcode using providers
      * @param string $barcode Input barcode
      * @return string Returns product name or "N/A" if not found
      */
     public static function lookUp($barcode) {
-
-        $resultOpenFoodFacts = (new ProviderOpenFoodFacts())->lookupBarcode($barcode);
-        if ($resultOpenFoodFacts != null)
-            return $resultOpenFoodFacts;
-
-        $resultUpcDb = (new ProviderUpcDb())->lookupBarcode($barcode);
-        if ($resultUpcDb != null)
-            return $resultUpcDb;
+        foreach (BarcodeLookup::$providers as &$provider) {
+            $result = (new $provider())->lookupBarcode($barcode);
+            if ($result != null)
+                return $result;
+        }
 
         return "N/A";
     }

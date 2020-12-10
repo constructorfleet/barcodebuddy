@@ -76,7 +76,8 @@ class DatabaseConnection {
         "USE_GROCY_QU_FACTOR"    => "0",
         "SHOW_STOCK_ON_SCAN"     => "0",
         "LOOKUP_USE_OFF"         => "1",
-        "LOOKUP_USE_UPC"         => "1");
+        "LOOKUP_USE_UPC"         => "1",
+        "LOOKUP_UPC_DATABASE_KEY"=> "0");
 
     const DB_INT_VALUES = array("REVERT_TIME");
 
