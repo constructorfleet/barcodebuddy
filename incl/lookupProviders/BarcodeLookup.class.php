@@ -24,6 +24,7 @@ class BarcodeLookup {
     private static $providers = array(
         "ProviderOpenFoodFacts",
         "ProviderUpcDb",
+        "ProviderJumbo",
         "ProviderUpcDatabase"
     );
 
