@@ -81,6 +81,8 @@ class DatabaseConnection {
         "LOOKUP_USE_UPC_DATABASE"=> "0",
         "LOOKUP_UPC_DATABASE_KEY"=> null);
 
+
+
     const DB_INT_VALUES = array("REVERT_TIME");
 
     /**
