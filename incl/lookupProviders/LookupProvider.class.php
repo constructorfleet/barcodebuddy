@@ -36,7 +36,7 @@ class LookupProvider {
 
     protected function isProviderEnabled() {
         if ($this->providerConfigKey == null)
-            throw new Exception('providerConfigKey needs to be overriden!');
+            throw new Exception('providerConfigKey needs to be overridden!');
         return BBConfig::getInstance()[$this->providerConfigKey];
     }
 
