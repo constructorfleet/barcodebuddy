@@ -77,6 +77,7 @@ class DatabaseConnection {
         "SHOW_STOCK_ON_SCAN"     => "0",
         "LOOKUP_USE_OFF"         => "1",
         "LOOKUP_USE_UPC"         => "1",
+        "LOOKUP_USE_JUMBO"       => "0",
         "LOOKUP_USE_UPC_DATABASE"=> "0",
         "LOOKUP_UPC_DATABASE_KEY"=> null);
 
@@ -230,7 +231,7 @@ class DatabaseConnection {
     private function isSupportedGrocyVersionOrDie() {
         global $ERROR_MESSAGE;
         $ERROR_MESSAGE = null;
-        $version = API::getGrocyVersion();
+        $version       = API::getGrocyVersion();
         if ($version == null) {
             $ERROR_MESSAGE = "Unable to communicate with Grocy and get Grocy version.";
         } elseif (!API::isSupportedGrocyVersion($version)) {
@@ -345,7 +346,7 @@ class DatabaseConnection {
 
     //Gets quantity for stored barcode quantities
     public function getQuantityByBarcode($barcode) {
-        $res      = $this->db->query("SELECT * FROM Quantities WHERE barcode='$barcode'");
+        $res = $this->db->query("SELECT * FROM Quantities WHERE barcode='$barcode'");
         if ($row = $res->fetchArray()) {
             return $row['quantitiy'];
         } else {
@@ -356,7 +357,7 @@ class DatabaseConnection {
 
     //Save product name if already stored as Quantity
     public function refreshQuantityProductName($barcode, $productname) {
-        $res      = $this->db->query("SELECT * FROM Quantities WHERE barcode='$barcode'");
+        $res = $this->db->query("SELECT * FROM Quantities WHERE barcode='$barcode'");
         if ($row = $res->fetchArray()) {
             $this->db->exec("UPDATE Quantities SET product='$productname' WHERE barcode='$barcode'");
         }
