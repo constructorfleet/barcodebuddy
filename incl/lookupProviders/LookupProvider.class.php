@@ -73,11 +73,11 @@ class LookupProvider {
     /**
      * Extracts a product model to facilitate integration with Grocy
      *
-     * @param array $json The lookup request's json response
+     * @param array $productJson The lookup request's json response
      * @return null|Product
      * @throws Exception
      */
-    protected function extractProductModel(array $json) : ?Product {
+    protected function extractProductModel(array $productJson) : ?Product {
         throw new Exception('extractProductModel needs to be overridden!');
     }
 

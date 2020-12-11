@@ -44,7 +44,7 @@ class ProviderOpenFoodFacts extends LookupProvider {
         return $result["product"];
     }
 
-    protected function extractProductModel(array $json): ?Product {
+    protected function extractProductModel(array $productJson): ?Product {
         $parseTag = function(?string $tag): ?string {
             if ($tag == null)
                 return null;
@@ -53,27 +53,29 @@ class ProviderOpenFoodFacts extends LookupProvider {
         };
 
         $genericName = (
-            isset($result["product"]["generic_name"])
-            && get($result["product"]["generic_name"]) != null
+            isset($productJson["generic_name"])
+            && get($productJson["generic_name"]) != null
         )
-            ? sanitizeString($result["product"]["generic_name"])
+            ? sanitizeString($productJson["generic_name"])
             : null;
         $productName = (
-            isset($result["product"]["product_name"])
-            && get($result["product"]["product_name"]) != null
+            isset($productJson["product_name"])
+            && get($productJson["product_name"]) != null
         )
-            ? sanitizeString($result["product"]["product_name"])
+            ? sanitizeString($productJson["product_name"])
             : null;
 
         return (new Product(
-            $productName,
-            $json["code"])
+            $this->useGenericName
+                ? ($genericName ?: $productName)
+                : ($productName ?: $genericName),
+            $productJson["code"])
         )
-            ->setDescription($json["ingredients_text"])
-            ->addTag($parseTag($json["compared_to_category"]))
-            ->addTags(array_map($parseTag, get($json["brands_tags"], array())))
-            ->addNutrients($this->processNutrients(get($json["nutrients"], array())))
-            ->addTags(array_map($parseTag, $json["categories_tags"]));
+            ->setDescription($productJson["ingredients_text"])
+            ->addTag($parseTag($productJson["compared_to_category"]))
+            ->addTags(array_map($parseTag, get($productJson["brands_tags"], array())))
+            ->addNutrients($this->processNutrients(get($productJson["nutrients"], array())))
+            ->addTags(array_map($parseTag, $productJson["categories_tags"]));
     }
 
     private function processNutrients(?array $nutrientsJson): ?array {
