@@ -20,6 +20,7 @@ require_once __DIR__ . "/lockGenerator.inc.php";
 require_once __DIR__ . "/db.inc.php";
 require_once __DIR__ . "/config.inc.php";
 require_once __DIR__ . "/lookupProviders/BarcodeLookup.class.php";
+require_once __DIR__ . "/helpers.php";
 
 
 // Function that is called when a barcode is passed on
@@ -179,17 +180,18 @@ function processUnknownBarcode($barcode, $websocketEnabled, &$fileLock, $bestBef
             ->setWebsocketResultCode(WS_RESULT_PRODUCT_LOOKED_UP)
             ->createLog();
     } else {
-        $productname = "N/A";
+        $product = null;
         if (is_numeric($barcode)) {
-            $productname = BarcodeLookup::lookup($barcode);
+            $product = BarcodeLookup::lookup($barcode);
         }
-        if ($productname != "N/A") {
-            $db->insertUnrecognizedBarcode($barcode, $amount, $bestBeforeInDays, $price, $productname, $db->checkNameForTags($productname));
-            $log    = new LogOutput("Unknown barcode looked up, found name: " . $productname, EVENT_TYPE_ADD_NEW_BARCODE, $barcode);
+        if ($product != null) {
+            $productName = $product->getName();
+            $db->insertUnrecognizedBarcode($barcode, $amount, $bestBeforeInDays, $price, $productName, $db->checkNameForTags($productName));
+            $log    = new LogOutput("Unknown barcode looked up, found name: " . $product->debug(), EVENT_TYPE_ADD_NEW_BARCODE, $barcode);
             $output = $log
                 ->insertBarcodeInWebsocketText()
                 ->setSendWebsocket($websocketEnabled)
-                ->setCustomWebsocketText($productname)
+                ->setCustomWebsocketText(json_encode($product))
                 ->setWebsocketResultCode(WS_RESULT_PRODUCT_LOOKED_UP)
                 ->createLog();
         } else {
@@ -198,7 +200,7 @@ function processUnknownBarcode($barcode, $websocketEnabled, &$fileLock, $bestBef
             $output = $log
                 ->insertBarcodeInWebsocketText()
                 ->setSendWebsocket($websocketEnabled)
-                ->setCustomWebsocketText($barcode)
+                ->setCustomWebsocketText(json_encode(new Product(null, $barcode)))
                 ->setWebsocketResultCode(WS_RESULT_PRODUCT_UNKNOWN)
                 ->createLog();
         }
@@ -591,6 +593,16 @@ function getAllChores() {
 function stringStartsWith($string, $startString) {
     $len = strlen($startString);
     return (substr($string, 0, $len) === $startString);
+}
+
+/**
+ * Whether the $string ends with $endString
+ * @param string $string String to validate
+ * @param string $endString Suffix validation
+ * @return bool
+ */
+function stringEndsWith(string $string, string $endString): bool {
+    return substr_compare($string, $endString, -strlen($endString)) === 0;
 }
 
 
