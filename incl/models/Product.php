@@ -183,6 +183,6 @@ class Product implements  JsonSerializable {
     }
 
     public function debug() {
-        return $this->name . ' ' . $this->barcodes[0];
+        return 'Name: ' . $this->name . ' Barcode: ' . $this->barcodes[0];
     }
 }

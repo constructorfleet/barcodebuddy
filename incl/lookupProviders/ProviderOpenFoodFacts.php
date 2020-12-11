@@ -54,21 +54,19 @@ class ProviderOpenFoodFacts extends LookupProvider {
 
         $genericName = (
             isset($result["product"]["generic_name"])
-            && !empty($result["product"]["generic_name"])
+            && get($result["product"]["generic_name"]) != null
         )
             ? sanitizeString($result["product"]["generic_name"])
             : null;
         $productName = (
             isset($result["product"]["product_name"])
-            && !empty($result["product"]["product_name"])
+            && get($result["product"]["product_name"]) != null
         )
             ? sanitizeString($result["product"]["product_name"])
             : null;
 
         return (new Product(
-            $this->useGenericName
-                ? ($genericName ?: $productName)
-                : ($productName ?: $genericName),
+            $productName,
             $json["code"])
         )
             ->setDescription($json["ingredients_text"])
